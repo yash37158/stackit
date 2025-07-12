@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -8,8 +8,9 @@ import { MessageSquare, ThumbsUp, Clock } from "lucide-react"
 import { useQuestionStore } from "@/stores/questionStore"
 import type { Question } from "@/types"
 
+
 interface QuestionCardProps {
-  question: Question
+  question: Question;
 }
 
 export default function QuestionCard({ question }: QuestionCardProps) {
@@ -17,15 +18,17 @@ export default function QuestionCard({ question }: QuestionCardProps) {
   const { setSelectedTag } = useQuestionStore()
 
   const timeAgo = (date: string) => {
-    const now = new Date()
-    const questionDate = new Date(date)
-    const diffInHours = Math.floor((now.getTime() - questionDate.getTime()) / (1000 * 60 * 60))
+    const now = new Date();
+    const questionDate = new Date(date);
+    const diffInHours = Math.floor(
+      (now.getTime() - questionDate.getTime()) / (1000 * 60 * 60),
+    );
 
-    if (diffInHours < 1) return "Just now"
-    if (diffInHours < 24) return `${diffInHours}h ago`
-    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`
-    return questionDate.toLocaleDateString()
-  }
+    if (diffInHours < 1) return "Just now";
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
+    return questionDate.toLocaleDateString("en-GB");
+  };
 
   const upvotes = (question.votes || []).reduce((total, vote) => 
     total + (vote.type === "upvote" ? 1 : -1), 0
@@ -46,11 +49,14 @@ export default function QuestionCard({ question }: QuestionCardProps) {
               <ThumbsUp className="h-4 w-4 text-gray-500" />
               <span className={`font-medium ${upvotes > 0 ? "text-green-600" : "text-gray-600"}`}>
                 {upvotes}
+
               </span>
             </div>
             <div className="flex items-center justify-center gap-1 text-sm">
               <MessageSquare className="h-4 w-4 text-gray-500" />
-              <span className={`font-medium ${question.answers.length > 0 ? "text-blue-600" : "text-gray-600"}`}>
+              <span
+                className={`font-medium ${question.answers.length > 0 ? "text-blue-600" : "text-gray-600"}`}
+              >
                 {question.answers.length}
               </span>
             </div>
@@ -95,6 +101,7 @@ export default function QuestionCard({ question }: QuestionCardProps) {
                 </div>
                 <span>
                   asked by <span className="font-medium text-gray-700">{question.author?.username || 'Unknown User'}</span>
+
                 </span>
               </div>
               <div className="flex items-center gap-1">
@@ -106,5 +113,5 @@ export default function QuestionCard({ question }: QuestionCardProps) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

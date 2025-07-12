@@ -36,33 +36,38 @@ export default function QuestionDetailsPage() {
     }
   }, [currentQuestion, router])
 
+
   if (!currentQuestion) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
         <main className="container mx-auto px-4 py-6 max-w-6xl">
           <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Question Not Found</h1>
-            <p className="text-gray-600 mb-6">The question you're looking for doesn't exist.</p>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+              Question Not Found
+            </h1>
+            <p className="text-gray-600 mb-6">
+              The question you're looking for doesn't exist.
+            </p>
             <Button onClick={() => router.push("/")}>Back to Home</Button>
           </div>
         </main>
       </div>
-    )
+    );
   }
 
   const handleVote = (type: "up" | "down") => {
     if (!user) {
-      setShowLoginModal(true)
-      return
+      setShowLoginModal(true);
+      return;
     }
     voteOnQuestion(questionId, type === "up" ? "upvote" : "downvote")
   }
 
   const handleAnswerSubmit = (content: string) => {
     if (!user) {
-      setShowLoginModal(true)
-      return
+      setShowLoginModal(true);
+      return;
     }
 
     addAnswer(questionId, content)
@@ -95,6 +100,7 @@ export default function QuestionDetailsPage() {
                       <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
                         <span>Asked {new Date(currentQuestion.createdAt).toLocaleDateString()}</span>
                         <span>{currentQuestion.answers.length} answers</span>
+
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -120,6 +126,7 @@ export default function QuestionDetailsPage() {
                       orientation="vertical"
                       userVote={currentQuestion.votes?.find(vote => vote.user.id === user?.id)?.type === "upvote" ? "up" : 
                                currentQuestion.votes?.find(vote => vote.user.id === user?.id)?.type === "downvote" ? "down" : null}
+
                     />
                   </div>
                   <div className="flex-1 p-6 pl-4">
@@ -133,6 +140,7 @@ export default function QuestionDetailsPage() {
                     <div className="flex justify-between items-center mb-6">
                       <h2 className="text-xl font-semibold text-gray-900">
                         {currentQuestion.answers.length} Answer{currentQuestion.answers.length !== 1 ? "s" : ""}
+
                       </h2>
                     </div>
 
@@ -148,13 +156,19 @@ export default function QuestionDetailsPage() {
                 <div className="border-t p-6">
                   {user ? (
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Your Answer</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                        Your Answer
+                      </h3>
                       <AnswerEditor onSubmit={handleAnswerSubmit} />
                     </div>
                   ) : (
                     <div className="text-center py-8">
-                      <p className="text-gray-600 mb-4">You need to be logged in to post an answer.</p>
-                      <Button onClick={() => setShowLoginModal(true)}>Login to Answer</Button>
+                      <p className="text-gray-600 mb-4">
+                        You need to be logged in to post an answer.
+                      </p>
+                      <Button onClick={() => setShowLoginModal(true)}>
+                        Login to Answer
+                      </Button>
                     </div>
                   )}
                 </div>
@@ -165,7 +179,10 @@ export default function QuestionDetailsPage() {
         </main>
       </div>
 
-      <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
     </>
-  )
+  );
 }

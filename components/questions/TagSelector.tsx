@@ -2,11 +2,12 @@
 
 import type React from "react"
 
-import { useState } from "react"
-import { Input } from "@/components/ui/input"
+import { useState, useEffect } from "react"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { X } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { tagService } from "@/lib/services/tag.service"
 
 interface TagSelectorProps {
   selectedTags: string[]
@@ -15,45 +16,55 @@ interface TagSelectorProps {
 }
 
 export default function TagSelector({ selectedTags, onChange, error }: TagSelectorProps) {
-  const [inputValue, setInputValue] = useState("")
+  const [availableTags, setAvailableTags] = useState<Array<{id: string, name: string}>>([])
+  const [isLoading, setIsLoading] = useState(false)
 
-  const popularTags = [
-    "javascript",
-    "react",
-    "typescript",
-    "node.js",
-    "python",
-    "css",
-    "html",
-    "api",
-    "database",
-    "git",
-  ]
-
-  const filteredTags = popularTags.filter(
-    (tag) => tag.toLowerCase().includes(inputValue.toLowerCase()) && !selectedTags.includes(tag),
-  )
-
-  const handleAddTag = (tag: string) => {
-    if (selectedTags.length < 5 && !selectedTags.includes(tag)) {
-      onChange([...selectedTags, tag])
-      setInputValue("")
-    }
-  }
-
-  const handleRemoveTag = (tagToRemove: string) => {
-    onChange(selectedTags.filter((tag) => tag !== tagToRemove))
-  }
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && inputValue.trim()) {
-      e.preventDefault()
-      const newTag = inputValue.trim().toLowerCase()
-      if (newTag && selectedTags.length < 5 && !selectedTags.includes(newTag)) {
-        onChange([...selectedTags, newTag])
-        setInputValue("")
+  useEffect(() => {
+    const loadTags = async () => {
+      try {
+        setIsLoading(true)
+        const tags = await tagService.getAllTags()
+        setAvailableTags(tags)
+      } catch (error) {
+        console.error('Failed to load tags:', error)
+        // Fallback to predefined tags if API fails
+        setAvailableTags([
+          { id: '1', name: 'javascript' },
+          { id: '2', name: 'react' },
+          { id: '3', name: 'typescript' },
+          { id: '4', name: 'node.js' },
+          { id: '5', name: 'python' },
+          { id: '6', name: 'css' },
+          { id: '7', name: 'html' },
+          { id: '8', name: 'api' }
+        ])
+      } finally {
+        setIsLoading(false)
       }
     }
+
+    loadTags()
+  }, [])
+
+  // Filter out already selected tags
+  const filteredTags = availableTags.filter(
+    (tag) => !selectedTags.includes(tag.id)
+  )
+
+  const handleAddTag = (tagId: string) => {
+    if (selectedTags.length < 5 && !selectedTags.includes(tagId)) {
+      onChange([...selectedTags, tagId])
+    }
+  }
+
+  const handleRemoveTag = (tagIdToRemove: string) => {
+    onChange(selectedTags.filter((tagId) => tagId !== tagIdToRemove))
+  }
+
+  // Get tag name by ID for display
+  const getTagName = (tagId: string) => {
+    const tag = availableTags.find(t => t.id === tagId)
+    return tag ? tag.name : tagId
   }
 
   return (
@@ -65,10 +76,10 @@ export default function TagSelector({ selectedTags, onChange, error }: TagSelect
       {/* Selected Tags */}
       {selectedTags.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-2">
-          {selectedTags.map((tag) => (
-            <Badge key={tag} variant="secondary" className="flex items-center gap-1">
-              {tag}
-              <button type="button" onClick={() => handleRemoveTag(tag)} className="ml-1 hover:text-red-600">
+          {selectedTags.map((tagId) => (
+            <Badge key={tagId} variant="secondary" className="flex items-center gap-1">
+              {getTagName(tagId)}
+              <button type="button" onClick={() => handleRemoveTag(tagId)} className="ml-1 hover:text-red-600">
                 <X className="h-3 w-3" />
               </button>
             </Badge>
@@ -76,35 +87,22 @@ export default function TagSelector({ selectedTags, onChange, error }: TagSelect
         </div>
       )}
 
-      <Input
-        id="tags"
-        type="text"
-        placeholder="Add tags (e.g., javascript, react)..."
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-        onKeyPress={handleKeyPress}
-        className={error ? "border-red-500" : ""}
-        disabled={selectedTags.length >= 5}
-      />
-
-      {/* Popular Tags Suggestions */}
-      {inputValue && filteredTags.length > 0 && (
-        <div className="border rounded-md p-2 bg-white shadow-sm">
-          <div className="text-xs text-gray-600 mb-2">Popular tags:</div>
-          <div className="flex flex-wrap gap-1">
-            {filteredTags.slice(0, 8).map((tag) => (
-              <button
-                key={tag}
-                type="button"
-                onClick={() => handleAddTag(tag)}
-                className="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded transition-colors"
-              >
-                {tag}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Tag Selection Dropdown */}
+      <Select 
+        onValueChange={handleAddTag}
+        disabled={selectedTags.length >= 5 || isLoading}
+      >
+        <SelectTrigger className={error ? "border-red-500" : ""}>
+          <SelectValue placeholder={isLoading ? "Loading tags..." : "Select a tag to add..."} />
+        </SelectTrigger>
+        <SelectContent>
+          {filteredTags.map((tag) => (
+            <SelectItem key={tag.id} value={tag.id}>
+              {tag.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
       <div className="flex justify-between text-xs">
         {error ? (

@@ -1,16 +1,22 @@
 "use client";
 
-import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { MessageSquare, Eye, ThumbsUp, Clock } from "lucide-react";
-import type { Question } from "@/types";
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
+import { MessageSquare, ThumbsUp, Clock } from "lucide-react"
+import { useQuestionStore } from "@/stores/questionStore"
+import type { Question } from "@/types"
+
 
 interface QuestionCardProps {
   question: Question;
 }
 
 export default function QuestionCard({ question }: QuestionCardProps) {
+  const router = useRouter()
+  const { setSelectedTag } = useQuestionStore()
+
   const timeAgo = (date: string) => {
     const now = new Date();
     const questionDate = new Date(date);
@@ -24,6 +30,15 @@ export default function QuestionCard({ question }: QuestionCardProps) {
     return questionDate.toLocaleDateString("en-GB");
   };
 
+  const upvotes = (question.votes || []).reduce((total, vote) => 
+    total + (vote.type === "upvote" ? 1 : -1), 0
+  )
+
+  const handleTagClick = (tagName: string) => {
+    setSelectedTag(tagName)
+    router.push('/')
+  }
+
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardContent className="p-6">
@@ -32,10 +47,9 @@ export default function QuestionCard({ question }: QuestionCardProps) {
           <div className="flex sm:flex-col gap-4 sm:gap-2 sm:w-20 text-center">
             <div className="flex items-center justify-center gap-1 text-sm">
               <ThumbsUp className="h-4 w-4 text-gray-500" />
-              <span
-                className={`font-medium ${question.votes > 0 ? "text-green-600" : "text-gray-600"}`}
-              >
-                {question.votes}
+              <span className={`font-medium ${upvotes > 0 ? "text-green-600" : "text-gray-600"}`}>
+                {upvotes}
+
               </span>
             </div>
             <div className="flex items-center justify-center gap-1 text-sm">
@@ -45,10 +59,6 @@ export default function QuestionCard({ question }: QuestionCardProps) {
               >
                 {question.answers.length}
               </span>
-            </div>
-            <div className="flex items-center justify-center gap-1 text-sm">
-              <Eye className="h-4 w-4 text-gray-500" />
-              <span className="text-gray-600">{question.views}</span>
             </div>
           </div>
 
@@ -64,14 +74,19 @@ export default function QuestionCard({ question }: QuestionCardProps) {
             </div>
 
             <div className="text-gray-600 text-sm mb-4 line-clamp-2">
-              {question.content.replace(/<[^>]*>/g, "").substring(0, 150)}...
+              {question.description.replace(/<[^>]*>/g, "").substring(0, 150)}...
             </div>
 
             {/* Tags */}
             <div className="flex flex-wrap gap-2 mb-4">
               {question.tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="text-xs">
-                  {tag}
+                <Badge
+                  key={tag.id}
+                  variant="secondary"
+                  className="text-xs cursor-pointer hover:bg-blue-100 transition-colors"
+                  onClick={() => handleTagClick(tag.name)}
+                >
+                  {tag.name}
                 </Badge>
               ))}
             </div>
@@ -81,14 +96,12 @@ export default function QuestionCard({ question }: QuestionCardProps) {
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
                   <span className="text-xs font-medium text-blue-600">
-                    {question.author.name.charAt(0).toUpperCase()}
+                    {question.author?.username?.charAt(0)?.toUpperCase() || '?'}
                   </span>
                 </div>
                 <span>
-                  asked by{" "}
-                  <span className="font-medium text-gray-700">
-                    {question.author.name}
-                  </span>
+                  asked by <span className="font-medium text-gray-700">{question.author?.username || 'Unknown User'}</span>
+
                 </span>
               </div>
               <div className="flex items-center gap-1">

@@ -1,29 +1,29 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Header from "@/components/common/Header"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useAuthStore } from "@/stores/authStore"
-import { useQuestionStore } from "@/stores/questionStore"
-import { Badge } from "@/components/ui/badge"
-import { Trash2, Flag, Eye, Users, MessageSquare, Tag } from "lucide-react"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Header from "@/components/common/Header";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuthStore } from "@/stores/authStore";
+import { useQuestionStore } from "@/stores/questionStore";
+import { Badge } from "@/components/ui/badge";
+import { Trash2, Flag, Eye, Users, MessageSquare, Tag } from "lucide-react";
 
 export default function AdminPanel() {
-  const router = useRouter()
-  const { user } = useAuthStore()
-  const { questions } = useQuestionStore()
-  const [newTag, setNewTag] = useState("")
+  const router = useRouter();
+  const { user } = useAuthStore();
+  const { questions } = useQuestionStore();
+  const [newTag, setNewTag] = useState("");
 
   // Mock admin check - in real app this would be from user role
-  const isAdmin = user?.role === "admin"
+  const isAdmin = user?.role === "admin";
 
   if (!user) {
-    router.push("/")
-    return null
+    router.push("/");
+    return null;
   }
 
   if (!isAdmin) {
@@ -32,13 +32,17 @@ export default function AdminPanel() {
         <Header />
         <main className="container mx-auto px-4 py-6 max-w-4xl">
           <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h1>
-            <p className="text-gray-600 mb-6">You don't have permission to access the admin panel.</p>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+              Access Denied
+            </h1>
+            <p className="text-gray-600 mb-6">
+              You don't have permission to access the admin panel.
+            </p>
             <Button onClick={() => router.push("/")}>Back to Home</Button>
           </div>
         </main>
       </div>
-    )
+    );
   }
 
   const stats = {
@@ -46,24 +50,24 @@ export default function AdminPanel() {
     totalAnswers: questions.reduce((acc, q) => acc + q.answers.length, 0),
     totalUsers: 156, // Mock data
     flaggedContent: 3, // Mock data
-  }
+  };
 
-  const flaggedQuestions = questions.slice(0, 3) // Mock flagged content
+  const flaggedQuestions = questions.slice(0, 3); // Mock flagged content
 
   const handleDeleteQuestion = (questionId: string) => {
     if (confirm("Are you sure you want to delete this question?")) {
       // In real app, this would call an API
-      console.log("Deleting question:", questionId)
+      console.log("Deleting question:", questionId);
     }
-  }
+  };
 
   const handleAddTag = () => {
     if (newTag.trim()) {
       // In real app, this would call an API
-      console.log("Adding tag:", newTag)
-      setNewTag("")
+      console.log("Adding tag:", newTag);
+      setNewTag("");
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -72,7 +76,9 @@ export default function AdminPanel() {
       <main className="container mx-auto px-4 py-6 max-w-6xl">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Admin Panel</h1>
-          <p className="text-gray-600">Manage content and monitor platform activity</p>
+          <p className="text-gray-600">
+            Manage content and monitor platform activity
+          </p>
         </div>
 
         {/* Stats Overview */}
@@ -82,8 +88,12 @@ export default function AdminPanel() {
               <div className="flex items-center">
                 <MessageSquare className="h-8 w-8 text-blue-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Total Questions</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.totalQuestions}</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    Total Questions
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {stats.totalQuestions}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -94,8 +104,12 @@ export default function AdminPanel() {
               <div className="flex items-center">
                 <Eye className="h-8 w-8 text-green-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Total Answers</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.totalAnswers}</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    Total Answers
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {stats.totalAnswers}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -106,8 +120,12 @@ export default function AdminPanel() {
               <div className="flex items-center">
                 <Users className="h-8 w-8 text-purple-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Total Users</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.totalUsers}</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    Total Users
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {stats.totalUsers}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -118,8 +136,12 @@ export default function AdminPanel() {
               <div className="flex items-center">
                 <Flag className="h-8 w-8 text-red-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Flagged Content</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.flaggedContent}</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    Flagged Content
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {stats.flaggedContent}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -145,11 +167,19 @@ export default function AdminPanel() {
               <CardContent>
                 <div className="space-y-4">
                   {flaggedQuestions.map((question) => (
-                    <div key={question.id} className="flex items-start justify-between p-4 border rounded-lg">
+                    <div
+                      key={question.id}
+                      className="flex items-start justify-between p-4 border rounded-lg"
+                    >
                       <div className="flex-1">
-                        <h3 className="font-medium text-gray-900 mb-1">{question.title}</h3>
+                        <h3 className="font-medium text-gray-900 mb-1">
+                          {question.title}
+                        </h3>
                         <p className="text-sm text-gray-600 mb-2">
-                          By {question.author.name} • {new Date(question.createdAt).toLocaleDateString()}
+                          By {question.author.name} •{" "}
+                          {new Date(question.createdAt).toLocaleDateString(
+                            "en-GB",
+                          )}
                         </p>
                         <div className="flex gap-2">
                           {question.tags.map((tag) => (
@@ -164,7 +194,11 @@ export default function AdminPanel() {
                           <Eye className="h-4 w-4 mr-1" />
                           Review
                         </Button>
-                        <Button variant="destructive" size="sm" onClick={() => handleDeleteQuestion(question.id)}>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDeleteQuestion(question.id)}
+                        >
                           <Trash2 className="h-4 w-4 mr-1" />
                           Delete
                         </Button>
@@ -199,8 +233,20 @@ export default function AdminPanel() {
                   <div className="space-y-2">
                     <h4 className="font-medium text-gray-900">Popular Tags</h4>
                     <div className="flex flex-wrap gap-2">
-                      {["javascript", "react", "typescript", "node.js", "python", "css", "html", "api"].map((tag) => (
-                        <div key={tag} className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1">
+                      {[
+                        "javascript",
+                        "react",
+                        "typescript",
+                        "node.js",
+                        "python",
+                        "css",
+                        "html",
+                        "api",
+                      ].map((tag) => (
+                        <div
+                          key={tag}
+                          className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1"
+                        >
                           <span className="text-sm">{tag}</span>
                           <button className="text-red-500 hover:text-red-700">
                             <Trash2 className="h-3 w-3" />
@@ -235,5 +281,5 @@ export default function AdminPanel() {
         </Tabs>
       </main>
     </div>
-  )
+  );
 }

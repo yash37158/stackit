@@ -1,26 +1,28 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
-import { MessageSquare, Eye, ThumbsUp, Clock } from "lucide-react"
-import type { Question } from "@/types"
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { MessageSquare, Eye, ThumbsUp, Clock } from "lucide-react";
+import type { Question } from "@/types";
 
 interface QuestionCardProps {
-  question: Question
+  question: Question;
 }
 
 export default function QuestionCard({ question }: QuestionCardProps) {
   const timeAgo = (date: string) => {
-    const now = new Date()
-    const questionDate = new Date(date)
-    const diffInHours = Math.floor((now.getTime() - questionDate.getTime()) / (1000 * 60 * 60))
+    const now = new Date();
+    const questionDate = new Date(date);
+    const diffInHours = Math.floor(
+      (now.getTime() - questionDate.getTime()) / (1000 * 60 * 60),
+    );
 
-    if (diffInHours < 1) return "Just now"
-    if (diffInHours < 24) return `${diffInHours}h ago`
-    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`
-    return questionDate.toLocaleDateString()
-  }
+    if (diffInHours < 1) return "Just now";
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
+    return questionDate.toLocaleDateString("en-GB");
+  };
 
   return (
     <Card className="hover:shadow-md transition-shadow">
@@ -30,13 +32,17 @@ export default function QuestionCard({ question }: QuestionCardProps) {
           <div className="flex sm:flex-col gap-4 sm:gap-2 sm:w-20 text-center">
             <div className="flex items-center justify-center gap-1 text-sm">
               <ThumbsUp className="h-4 w-4 text-gray-500" />
-              <span className={`font-medium ${question.votes > 0 ? "text-green-600" : "text-gray-600"}`}>
+              <span
+                className={`font-medium ${question.votes > 0 ? "text-green-600" : "text-gray-600"}`}
+              >
                 {question.votes}
               </span>
             </div>
             <div className="flex items-center justify-center gap-1 text-sm">
               <MessageSquare className="h-4 w-4 text-gray-500" />
-              <span className={`font-medium ${question.answers.length > 0 ? "text-blue-600" : "text-gray-600"}`}>
+              <span
+                className={`font-medium ${question.answers.length > 0 ? "text-blue-600" : "text-gray-600"}`}
+              >
                 {question.answers.length}
               </span>
             </div>
@@ -79,7 +85,10 @@ export default function QuestionCard({ question }: QuestionCardProps) {
                   </span>
                 </div>
                 <span>
-                  asked by <span className="font-medium text-gray-700">{question.author.name}</span>
+                  asked by{" "}
+                  <span className="font-medium text-gray-700">
+                    {question.author.name}
+                  </span>
                 </span>
               </div>
               <div className="flex items-center gap-1">
@@ -91,5 +100,5 @@ export default function QuestionCard({ question }: QuestionCardProps) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

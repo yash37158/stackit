@@ -4,11 +4,12 @@ import { useState } from "react"
 import VoteButton from "@/components/common/VoteButton"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Check, Flag, Share2 } from "lucide-react"
+import { Check, Share2 } from "lucide-react"
 import type { Answer } from "@/types"
 import { useAuthStore } from "@/stores/authStore"
 import { useQuestionStore } from "@/stores/questionStore"
 import LoginModal from "@/components/auth/LoginModal"
+import { renderMarkdown } from "@/lib/utils"
 
 interface AnswerListProps {
   answers: Answer[]
@@ -21,12 +22,14 @@ export default function AnswerList({ answers, questionId, questionAuthorId }: An
   const { voteOnAnswer, acceptAnswer } = useQuestionStore()
   const [showLoginModal, setShowLoginModal] = useState(false)
 
+
+
   const handleVote = (answerId: string, type: "up" | "down") => {
     if (!user) {
       setShowLoginModal(true)
       return
     }
-    voteOnAnswer(questionId, answerId, type, user.id)
+    voteOnAnswer(questionId, answerId, type === "up" ? "upvote" : "downvote")
   }
 
   const handleAcceptAnswer = (answerId: string) => {
@@ -37,7 +40,9 @@ export default function AnswerList({ answers, questionId, questionAuthorId }: An
   const sortedAnswers = [...answers].sort((a, b) => {
     if (a.isAccepted && !b.isAccepted) return -1
     if (!a.isAccepted && b.isAccepted) return 1
-    return b.votes - a.votes
+    const aVotes = (a.votes || []).reduce((sum, vote) => sum + (vote.type === "upvote" ? 1 : -1), 0)
+    const bVotes = (b.votes || []).reduce((sum, vote) => sum + (vote.type === "upvote" ? 1 : -1), 0)
+    return bVotes - aVotes
   })
 
   if (answers.length === 0) {
@@ -57,9 +62,11 @@ export default function AnswerList({ answers, questionId, questionAuthorId }: An
               {/* Voting */}
               <div className="flex flex-col items-center gap-2">
                 <VoteButton
-                  votes={answer.votes}
+                  votes={(answer.votes || []).reduce((sum, vote) => sum + (vote.type === "upvote" ? 1 : -1), 0)}
                   onVote={(type) => handleVote(answer.id, type)}
                   orientation="vertical"
+                  userVote={answer.votes?.find(vote => vote.user.id === user?.id)?.type === "upvote" ? "up" : 
+                           answer.votes?.find(vote => vote.user.id === user?.id)?.type === "downvote" ? "down" : null}
                 />
 
                 {/* Accept Answer Button */}
@@ -89,7 +96,7 @@ export default function AnswerList({ answers, questionId, questionAuthorId }: An
                   </div>
                 )}
 
-                <div className="prose prose-sm max-w-none mb-4" dangerouslySetInnerHTML={{ __html: answer.content }} />
+                <div className="prose prose-sm max-w-none mb-4" dangerouslySetInnerHTML={{ __html: renderMarkdown(answer.content) }} />
 
                 {/* Answer Actions */}
                 <div className="flex items-center justify-between">
@@ -98,10 +105,7 @@ export default function AnswerList({ answers, questionId, questionAuthorId }: An
                       <Share2 className="h-3 w-3 mr-1" />
                       Share
                     </Button>
-                    <Button variant="ghost" size="sm" className="text-xs">
-                      <Flag className="h-3 w-3 mr-1" />
-                      Flag
-                    </Button>
+
                   </div>
 
                   {/* Author Info */}
@@ -112,12 +116,12 @@ export default function AnswerList({ answers, questionId, questionAuthorId }: An
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
                         <span className="text-xs font-medium text-blue-600">
-                          {answer.author.name.charAt(0).toUpperCase()}
+                          {answer.author?.username?.charAt(0)?.toUpperCase() || '?'}
                         </span>
                       </div>
                       <div>
-                        <div className="font-medium text-sm text-gray-900">{answer.author.name}</div>
-                        <div className="text-xs text-gray-600">1,247 reputation</div>
+                        <div className="font-medium text-sm text-gray-900">{answer.author?.username || 'Unknown User'}</div>
+                        
                       </div>
                     </div>
                   </div>

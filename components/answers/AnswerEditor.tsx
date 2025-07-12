@@ -42,7 +42,7 @@ export default function AnswerEditor({ onSubmit }: AnswerEditorProps) {
 
       <div className="flex justify-between items-center">
         <div className="text-sm text-gray-500">
-          {content.length < 20 && <span className="text-red-600">Answer must be at least 20 characters long</span>}
+          {content.length < 20 && <span className="text-gray-600">Answer must be at least 20 characters long</span>}
         </div>
 
         <div className="flex gap-2">

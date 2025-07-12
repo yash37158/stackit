@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuthStore } from "@/stores/authStore"
 import { useQuestionStore } from "@/stores/questionStore"
 import { Badge } from "@/components/ui/badge"
-import { Trash2, Flag, Eye, Users, MessageSquare, Tag } from "lucide-react"
+import { Trash2, Eye, Users, MessageSquare, Tag } from "lucide-react"
 
 export default function AdminPanel() {
   const router = useRouter()
@@ -45,10 +45,7 @@ export default function AdminPanel() {
     totalQuestions: questions.length,
     totalAnswers: questions.reduce((acc, q) => acc + q.answers.length, 0),
     totalUsers: 156, // Mock data
-    flaggedContent: 3, // Mock data
   }
-
-  const flaggedQuestions = questions.slice(0, 3) // Mock flagged content
 
   const handleDeleteQuestion = (questionId: string) => {
     if (confirm("Are you sure you want to delete this question?")) {
@@ -76,7 +73,7 @@ export default function AdminPanel() {
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center">
@@ -112,18 +109,6 @@ export default function AdminPanel() {
               </div>
             </CardContent>
           </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <Flag className="h-8 w-8 text-red-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Flagged Content</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.flaggedContent}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Admin Tabs */}
@@ -138,39 +123,14 @@ export default function AdminPanel() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Flag className="h-5 w-5" />
-                  Flagged Questions
+                  <Eye className="h-5 w-5" />
+                  Content Moderation
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {flaggedQuestions.map((question) => (
-                    <div key={question.id} className="flex items-start justify-between p-4 border rounded-lg">
-                      <div className="flex-1">
-                        <h3 className="font-medium text-gray-900 mb-1">{question.title}</h3>
-                        <p className="text-sm text-gray-600 mb-2">
-                          By {question.author.name} • {new Date(question.createdAt).toLocaleDateString()}
-                        </p>
-                        <div className="flex gap-2">
-                          {question.tags.map((tag) => (
-                            <Badge key={tag} variant="secondary">
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="flex gap-2 ml-4">
-                        <Button variant="outline" size="sm">
-                          <Eye className="h-4 w-4 mr-1" />
-                          Review
-                        </Button>
-                        <Button variant="destructive" size="sm" onClick={() => handleDeleteQuestion(question.id)}>
-                          <Trash2 className="h-4 w-4 mr-1" />
-                          Delete
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
+                <div className="text-center py-8 text-gray-500">
+                  <Eye className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>Content moderation features coming soon</p>
                 </div>
               </CardContent>
             </Card>
@@ -197,7 +157,7 @@ export default function AdminPanel() {
                   </div>
 
                   <div className="space-y-2">
-                    <h4 className="font-medium text-gray-900">Popular Tags</h4>
+                    <h4 className="font-medium text-gray-900">Available Tags</h4>
                     <div className="flex flex-wrap gap-2">
                       {["javascript", "react", "typescript", "node.js", "python", "css", "html", "api"].map((tag) => (
                         <div key={tag} className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1">
@@ -208,6 +168,9 @@ export default function AdminPanel() {
                         </div>
                       ))}
                     </div>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Note: Tags are predefined and cannot be deleted by users. Only admins can manage tags.
+                    </p>
                   </div>
                 </div>
               </CardContent>

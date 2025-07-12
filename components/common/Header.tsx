@@ -14,11 +14,14 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Bell, Menu, Search, User, LogOut, Settings, Shield } from "lucide-react"
 import { useAuthStore } from "@/stores/authStore"
+import { useQuestionStore } from "@/stores/questionStore"
 import LoginModal from "@/components/auth/LoginModal"
 import NotificationDropdown from "@/components/common/NotificationDropdown"
+import SearchBar from "@/components/common/SearchBar"
 
 export default function Header() {
   const { user, logout } = useAuthStore()
+  const { searchQuery, setSearchQuery } = useQuestionStore()
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
@@ -44,52 +47,29 @@ export default function Header() {
               <Link href="/ask" className="text-gray-700 hover:text-blue-600 transition-colors">
                 Ask Question
               </Link>
-              <Link href="/tags" className="text-gray-700 hover:text-blue-600 transition-colors">
-                Tags
-              </Link>
             </nav>
-
-            {/* Search Bar - Desktop */}
-            <div className="hidden lg:flex items-center flex-1 max-w-md mx-8">
-              <div className="relative w-full">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input type="text" placeholder="Search questions..." className="pl-10 pr-4" />
-              </div>
-            </div>
 
             {/* User Actions */}
             <div className="flex items-center space-x-4">
               {user ? (
                 <>
-                  {/* Notifications */}
-                  <div className="relative">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowNotifications(!showNotifications)}
-                      className="relative"
-                    >
-                      <Bell className="h-5 w-5" />
-                      <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
-                        3
-                      </Badge>
-                    </Button>
-                    {showNotifications && <NotificationDropdown onClose={() => setShowNotifications(false)} />}
-                  </div>
+                 
 
                   {/* User Menu */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="flex items-center space-x-2">
                         <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                          <User className="h-4 w-4 text-blue-600" />
+                          <span className="text-sm font-medium text-blue-600">
+                            {user.username.charAt(0).toUpperCase()}
+                          </span>
                         </div>
-                        <span className="hidden sm:block">{user.name}</span>
+                        <span className="hidden sm:block">{user.username}</span>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
                       <div className="px-2 py-1.5">
-                        <p className="text-sm font-medium">{user.name}</p>
+                        <p className="text-sm font-medium">{user.username}</p>
                         <p className="text-xs text-gray-500">{user.email}</p>
                       </div>
                       <DropdownMenuSeparator />
@@ -98,8 +78,6 @@ export default function Header() {
                         Profile
                       </DropdownMenuItem>
                       <DropdownMenuItem>
-                        <Settings className="mr-2 h-4 w-4" />
-                        Settings
                       </DropdownMenuItem>
                       {user.role === "admin" && (
                         <DropdownMenuItem asChild>
@@ -138,10 +116,11 @@ export default function Header() {
             <div className="md:hidden border-t border-gray-200 py-4">
               <div className="space-y-4">
                 {/* Mobile Search */}
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <Input type="text" placeholder="Search questions..." className="pl-10 pr-4" />
-                </div>
+                <SearchBar 
+                  value={searchQuery} 
+                  onChange={setSearchQuery} 
+                  placeholder="Search questions..." 
+                />
 
                 {/* Mobile Navigation */}
                 <nav className="space-y-2">

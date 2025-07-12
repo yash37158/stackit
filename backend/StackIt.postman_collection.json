@@ -1,0 +1,362 @@
+{
+  "info": {
+    "_postman_id": "stackit-api-collection",
+    "name": "StackIt API",
+    "description": "Collection for testing StackIt Q&A Platform API endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"securepassword\",\n  \"username\": \"johndoe\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"securepassword\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Questions",
+      "item": [
+        {
+          "name": "Get All Questions",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/questions?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["questions"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Question by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/questions/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["questions", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "question_id"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Question",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"How to use TypeScript with React?\",\n  \"description\": \"I'm trying to set up a new React project with TypeScript...\",\n  \"tagIds\": [\"tag_id1\", \"tag_id2\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/questions",
+              "host": ["{{baseUrl}}"],
+              "path": ["questions"]
+            }
+          }
+        },
+        {
+          "name": "Update Question",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated title\",\n  \"description\": \"Updated description\",\n  \"tagIds\": [\"tag_id1\", \"tag_id2\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/questions/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["questions", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "question_id"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Question",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/questions/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["questions", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "question_id"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Answers",
+      "item": [
+        {
+          "name": "Create Answer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"questionId\": \"question_id\",\n  \"content\": \"This is my answer...\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/answers",
+              "host": ["{{baseUrl}}"],
+              "path": ["answers"]
+            }
+          }
+        },
+        {
+          "name": "Update Answer",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Updated answer content\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/answers/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["answers", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "answer_id"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Accept Answer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/answers/:id/accept",
+              "host": ["{{baseUrl}}"],
+              "path": ["answers", ":id", "accept"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "answer_id"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Vote on Answer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"upvote\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/answers/:id/vote",
+              "host": ["{{baseUrl}}"],
+              "path": ["answers", ":id", "vote"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "answer_id"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tags",
+      "item": [
+        {
+          "name": "Get All Tags",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/tags",
+              "host": ["{{baseUrl}}"],
+              "path": ["tags"]
+            }
+          }
+        },
+        {
+          "name": "Get Popular Tags",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/tags/popular?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["tags", "popular"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Tag",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"typescript\",\n  \"description\": \"TypeScript programming language\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tags",
+              "host": ["{{baseUrl}}"],
+              "path": ["tags"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api"
+    },
+    {
+      "key": "token",
+      "value": "your_jwt_token_here"
+    }
+  ]
+} 

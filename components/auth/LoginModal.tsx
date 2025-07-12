@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuthStore } from "@/stores/authStore"
 import { Chrome } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 interface LoginModalProps {
   isOpen: boolean
@@ -17,11 +17,10 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
-  const { login } = useAuthStore()
-  const [isLoading, setIsLoading] = useState(false)
+  const { login, register, isLoading, error, clearError } = useAuthStore()
   const [loginData, setLoginData] = useState({ email: "", password: "" })
   const [signupData, setSignupData] = useState({
-    name: "",
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -29,19 +28,12 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
-
-    // Simulate API call
-    setTimeout(() => {
-      login({
-        id: "1",
-        name: "John Doe",
-        email: loginData.email,
-        role: "user",
-      })
-      setIsLoading(false)
+    try {
+      await login(loginData.email, loginData.password)
       onClose()
-    }, 1000)
+    } catch (error) {
+      // Error is handled by the store
+    }
   }
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -50,43 +42,36 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       return
     }
 
-    setIsLoading(true)
-
-    // Simulate API call
-    setTimeout(() => {
-      login({
-        id: "1",
-        name: signupData.name,
-        email: signupData.email,
-        role: "user",
-      })
-      setIsLoading(false)
+    try {
+      await register(signupData.username, signupData.email, signupData.password)
       onClose()
-    }, 1000)
+    } catch (error) {
+      // Error is handled by the store
+    }
   }
 
   const handleGoogleLogin = () => {
-    setIsLoading(true)
-    // Simulate OAuth
-    setTimeout(() => {
-      login({
-        id: "1",
-        name: "John Doe",
-        email: "john@example.com",
-        role: "user",
-      })
-      setIsLoading(false)
-      onClose()
-    }, 1000)
+    // TODO: Implement OAuth
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      if (!open) {
+        clearError()
+        onClose()
+      }
+    }}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Welcome to StackIt</DialogTitle>
           <DialogDescription>Join our community of developers and get your questions answered</DialogDescription>
         </DialogHeader>
+
+        {error && (
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
 
         <Tabs defaultValue="login" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
@@ -96,16 +81,6 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
           <TabsContent value="login" className="space-y-4">
             <div className="space-y-3">
-              <Button
-                onClick={handleGoogleLogin}
-                disabled={isLoading}
-                className="w-full bg-transparent"
-                variant="outline"
-              >
-                <Chrome className="mr-2 h-4 w-4" />
-                Continue with Google
-              </Button>
-
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <span className="w-full border-t" />
@@ -126,6 +101,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   value={loginData.email}
                   onChange={(e) => setLoginData((prev) => ({ ...prev, email: e.target.value }))}
                   required
+                  disabled={isLoading}
                 />
               </div>
               <div className="space-y-2">
@@ -137,6 +113,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   value={loginData.password}
                   onChange={(e) => setLoginData((prev) => ({ ...prev, password: e.target.value }))}
                   required
+                  disabled={isLoading}
                 />
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
@@ -167,14 +144,15 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
             <form onSubmit={handleSignup} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
+                <Label htmlFor="username">Username</Label>
                 <Input
-                  id="name"
+                  id="username"
                   type="text"
-                  placeholder="Enter your full name"
-                  value={signupData.name}
-                  onChange={(e) => setSignupData((prev) => ({ ...prev, name: e.target.value }))}
+                  placeholder="Choose a username"
+                  value={signupData.username}
+                  onChange={(e) => setSignupData((prev) => ({ ...prev, username: e.target.value }))}
                   required
+                  disabled={isLoading}
                 />
               </div>
               <div className="space-y-2">
@@ -186,6 +164,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   value={signupData.email}
                   onChange={(e) => setSignupData((prev) => ({ ...prev, email: e.target.value }))}
                   required
+                  disabled={isLoading}
                 />
               </div>
               <div className="space-y-2">
@@ -197,6 +176,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   value={signupData.password}
                   onChange={(e) => setSignupData((prev) => ({ ...prev, password: e.target.value }))}
                   required
+                  disabled={isLoading}
                 />
               </div>
               <div className="space-y-2">
@@ -208,6 +188,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   value={signupData.confirmPassword}
                   onChange={(e) => setSignupData((prev) => ({ ...prev, confirmPassword: e.target.value }))}
                   required
+                  disabled={isLoading}
                 />
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>

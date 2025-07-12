@@ -58,7 +58,7 @@ export default function AskQuestionPage() {
     return !Object.values(newErrors).some((error) => error !== "")
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!user) {
@@ -67,21 +67,12 @@ export default function AskQuestionPage() {
     }
 
     if (validateForm()) {
-      const newQuestion = {
-        id: Date.now().toString(),
-        title: formData.title,
-        content: formData.content,
-        tags: formData.tags,
-        author: user,
-        createdAt: new Date().toISOString(),
-        votes: 0,
-        answers: [],
-        views: 0,
-        isAnswered: false,
+      try {
+        await addQuestion(formData.title, formData.content, formData.tags)
+        router.push('/')
+      } catch (error) {
+        // Error is handled by the store
       }
-
-      addQuestion(newQuestion)
-      router.push(`/question/${newQuestion.id}`)
     }
   }
 
